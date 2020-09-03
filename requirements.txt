@@ -7,11 +7,13 @@ constantly==15.1.0
 cryptography==3.1
 daphne==2.5.0
 Django==3.1
+django-redis==4.12.1
 django-rest-framework==0.1.0
 djangorestframework==3.11.1
 hyperlink==20.0.1
 idna==2.10
 incremental==17.5.0
+Pillow==7.2.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.20
@@ -19,6 +21,7 @@ PyHamcrest==2.0.2
 PyMySQL==0.10.0
 pyOpenSSL==19.1.0
 pytz==2020.1
+redis==3.5.3
 service-identity==18.1.0
 six==1.15.0
 sqlparse==0.3.1

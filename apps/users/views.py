@@ -1,6 +1,9 @@
 from django.db import transaction
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.http import HttpResponse
+
+from django_redis import get_redis_connection
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +12,8 @@ from . import forms
 from .models import User
 from .serializers import UserSerializer
 from utils.response import MyResponse
+from utils import constans
+from libs.captcha.captcha import captcha
 
 
 # Create your views here.
@@ -50,3 +55,15 @@ class RegisterView(APIView):
             msg = form.errors[list(form.errors.keys())[0]][0]
             return Response(response.error_response(msg=msg))
 
+class CaptchaView(APIView):
+    """
+    获取验证码接口
+    """
+    def get(self, request):
+        image_code_id = request.GET.get("image_code_id")
+
+        text, image = captcha.generate_captcha()
+        redis_conn = get_redis_connection("verify_codes")
+        redis_conn.setex("img_%s" % image_code_id, constans.IMAGE_CODE_REDIS_EXPIRES, text)
+
+        return HttpResponse(image, content_type="images/jpg")
