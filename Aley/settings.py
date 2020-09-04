@@ -81,8 +81,7 @@ WSGI_APPLICATION = 'Aley.wsgi.application'
 # 数据库配置 使用 mysql 数据库
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
+        
         "ENGINE": "django.db.backends.mysql",
         "HOST": "127.0.0.1",
         "PORT": 3306,
@@ -94,6 +93,7 @@ DATABASES = {
 
 # 缓存配置 使用 django_redis
 CACHES = {
+
     # 默认使用redis 库0
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -122,12 +122,13 @@ CACHES = {
     },
 
     # 密码输入错误次数使用redis 库3
-    "error_pwd": {
+    "error_password": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/3",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
+
     },
 }
 
@@ -171,3 +172,9 @@ STATIC_URL = '/static/'
 
 # 用户认证
 AUTH_USER_MODEL = "users.User"
+
+# rest_framework 相关配置
+REST_FRAMEWORK = {
+    # 异常处理
+    "EXCEPTION_HANDLER": "utils.exception.exception_handler"
+}

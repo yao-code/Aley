@@ -8,4 +8,8 @@ urlpatterns = [
 
     # 获取验证码API
     path(r"captcha/", views.CaptchaView.as_view(), name="captcha"),
+
+    # 登陆API
+    path(r"login/", views.LoginView.as_view(), name="login"),
+    
 ]

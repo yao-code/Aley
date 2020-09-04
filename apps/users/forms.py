@@ -72,3 +72,10 @@ class RegisterForm(forms.Form):
         if not re.match(r"^(?=.*[0-9].*)(?=.*[A=Z].*)(?=.*[a-z].*).{8,30}", password):
             raise ValidationError("密码长度至少为8,且必须包含至少一个数字，一个大写字母，一个小写字母!")
         return self.cleaned_data
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(error_messages={"required":"该字段不能为空"})
+    password = forms.CharField(error_messages={"required":"该字段不能为空"})
+    image_code_id = forms.CharField(error_messages={"required":"该字段不能为空"})
+    image_code = forms.CharField(error_messages={"required":"该字段不能为空"})
