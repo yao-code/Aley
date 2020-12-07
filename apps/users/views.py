@@ -1,5 +1,6 @@
 import datetime
 
+
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import render
@@ -196,3 +197,4 @@ class LoginView(BaseView, APIView):
         else:
             msg = form.errors[list(form.errors.keys())[0]][0]
             return Response(response.error_response(msg=msg))
+

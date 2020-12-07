@@ -43,6 +43,9 @@ INSTALLED_APPS = [
 
     # 用户模块 
     "users",
+
+    # tenacity 测试
+    "tenacity_test",
 ]
 
 MIDDLEWARE = [

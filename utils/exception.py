@@ -5,6 +5,7 @@ from rest_framework import status
 from django.db import DatabaseError
 
 from redis.exceptions import RedisError
+from tenacity import RetryError
 
 
 def exception_handler(exc, context):
@@ -23,7 +24,13 @@ def exception_handler(exc, context):
 
         if isinstance(exc, DatabaseError) or isinstance(exc, RedisError):
             # 数据库异常
-            response = Response({"msg": "服务区内部错误"}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
+            response = Response({"msg": "服务器内部错误"}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
+    
+    if isinstance(exc, RetryError):
+        response = Response({"msg": "重试失败!!!"}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
+    if isinstance(exc, KeyError):
+        response = Response({"msg": "keyerror"}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
+    
     return response
 
 

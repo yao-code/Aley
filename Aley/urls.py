@@ -20,5 +20,6 @@ urlpatterns = [
 
     # 用户模块
     path('users/', include('users.urls')),
+    path('tenacity/', include('tenacity_test.urls')),
     
 ]

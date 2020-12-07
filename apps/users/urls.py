@@ -11,5 +11,6 @@ urlpatterns = [
 
     # 登陆API
     path(r"login/", views.LoginView.as_view(), name="login"),
+
     
 ]
