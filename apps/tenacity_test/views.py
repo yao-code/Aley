@@ -1,7 +1,13 @@
 from django.shortcuts import render
 
 from rest_framework.views import APIView
+from rest_framework.parsers import JSONParser
+from rest_framework.parsers import FormParser
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import GenericAPIView
 
 # from tenacity import retry
 # from tenacity import wait_fixed
@@ -13,6 +19,9 @@ from rest_framework.response import Response
 from tenacity import *
 
 from utils.response import MyResponse
+
+from users.models import User
+from users.serializers import UserSerializer
 
 
 # Create your views here.
@@ -115,3 +124,119 @@ class Test_9(APIView):
         print("正在重试。。。")
         raise KeyError
         return Response(response.to_dict())
+
+
+class Data(APIView):
+    """通过 request.data  获取参数 """
+
+    def get(self, request):
+        data = request.data  # 不能获取到get方法的参数
+        print(data)
+        return Response(MyResponse().to_dict())
+
+    def post(self, request):
+        data = request.data  # 可以获取到参数
+        print(data)
+        return Response(MyResponse().to_dict())
+
+    def put(self, request):
+        data = request.data  # 可以获取到参数
+        print(data)
+        return Response(MyResponse().to_dict())
+
+    def delete(self, request):
+        data = request.data  # 可以获取到参数
+        print(data)
+        return Response(MyResponse().to_dict())
+
+
+class Query_Params(APIView):
+    """
+    通过 request.query_params 获取参数
+    可以获取 GET 请求的所有参数
+    可以获取任何请求以get方式传递的参数 e.g: post 请求可以获取到 params 里的参数 但是获取不到 body 里的参数
+    """
+
+    def get(self, request):
+        data = request.query_params
+        print(data)
+        return Response(MyResponse().to_dict())
+
+    def post(self, request):
+        data = request.query_params 
+        print(data)
+        return Response(MyResponse().to_dict())
+
+    def put(self, request):
+        data = request.query_params
+        print(data)
+        return Response(MyResponse().to_dict())
+
+    def delete(self, request):
+        data = request.query_params
+        print(data)
+        return Response(MyResponse().to_dict())
+
+
+
+class Parsers(APIView):
+    # 设置局部的解析器
+    parser_classes = (JSONParser,)
+
+    def post(self, request, *args, **kwargs):
+        print(request.content_type)  # 返回表示 HTTP 请求正文的媒体类型（media type）的字符串对象
+        print(request.stream)
+        return Response({"data": request.data})
+
+
+class TestResponse(APIView):
+
+    def get(self, request):
+        print(self.get_renderers())
+
+        # print(self.get_parsers())
+
+        # print(self.get_authenticators())
+
+        # print(self.get_throttles())
+
+        # print(self.get_permissions())
+
+        # print(self.get_content_negotiator())
+
+        # print(self.get_exception_handler())
+
+        return Response({"data": "OK"})
+
+
+class UserList(ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserList2(GenericAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    lookup_field = "pk"
+    lookup_url_kwarg = "uid"
+
+    def get(self, request, uid=None):
+        print(uid)
+        response = MyResponse()
+        if not uid:
+            user_queryset = self.get_queryset()
+            if user_queryset.exists():
+                response.data = self.get_serializer(user_queryset, many=True).data
+                return Response(response.to_dict())
+            return Response(response.error_response("nothing"))
+
+        else:
+            user_obj = self.get_object()
+            if user_obj:
+                response.data = self.get_serializer(user_obj).data
+                return Response(response.to_dict())
+            return Response(response.error_response("no one"))
+
+
+
+
+

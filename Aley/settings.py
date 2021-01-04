@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import sys
 import os
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
 
     # 用户模块 
     "users",
@@ -179,5 +182,24 @@ AUTH_USER_MODEL = "users.User"
 # rest_framework 相关配置
 REST_FRAMEWORK = {
     # 异常处理
-    "EXCEPTION_HANDLER": "utils.exception.exception_handler"
+    "EXCEPTION_HANDLER": "utils.exception.exception_handler",
+
+    #用户认证
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 默认的验证是按照验证列表从上到下的验证
+        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        )
+    }
+
+    # 设置默认的解析器
+    # "DEFAULT_PARSER_CLASSES":["rest_framework.parsers.JSONParser",
+    #                           "rest_framework.parsers.FormParser",
+    #                           "rest_framework.parsers.MultiPartParser"]
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    # token前缀
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }

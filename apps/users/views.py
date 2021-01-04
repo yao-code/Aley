@@ -1,6 +1,5 @@
 import datetime
 
-
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import render
@@ -21,14 +20,13 @@ from utils.exception import MyException
 from utils import constans
 from libs.captcha.captcha import captcha
 
-
 # Create your views here.
+
 
 class BaseView():
     """
     基础视图类，用于继承，提供 校验用户 校验密码 校验验证码 签发jwt
     """
-
     def get_user(self, username):
         """
         获取用户对象
@@ -36,10 +34,11 @@ class BaseView():
         :return: user_obj  用户对象
         """
         try:
-            user_obj = User.objects.get(Q(username=username)|Q(phone=username)|Q(email=username))
+            user_obj = User.objects.get(
+                Q(username=username) | Q(phone=username) | Q(email=username))
         except User.DoesNotExist:
             raise MyException("用户不存在!")
-        
+
         return user_obj
 
     def check_password(self, user, password):
@@ -52,7 +51,7 @@ class BaseView():
         if not user.password == password:
             self.is_freeze(user)
             raise MyException("密码错误,请重新输入!")
-        
+
         redis_conn = get_redis_connection("error_password")
         if redis_conn.get("freeze_%s" % user.username):
             raise MyException("密码输入错误5次，请一天后再试!")
@@ -68,15 +67,19 @@ class BaseView():
         error_count = redis_conn.get("username_%s" % user.username)
 
         if not error_count:
-            redis_conn.setex("username_%s" % user.username, constans.PASSWORD_ERROR_REDIS_EXPIRES, "1")
+            redis_conn.setex("username_%s" % user.username,
+                             constans.PASSWORD_ERROR_REDIS_EXPIRES, "1")
 
         elif int(error_count) == 5:
-            redis_conn.setex("freeze_%s" % user.username, constans.FREEZE_USER_REDIS_EXPIRES, "1")
+            redis_conn.setex("freeze_%s" % user.username,
+                             constans.FREEZE_USER_REDIS_EXPIRES, "1")
 
         else:
             error_count = int(error_count)
             error_count += 1
-            redis_conn.setex("username_%s" % user.username, constans.PASSWORD_ERROR_REDIS_EXPIRES, str(error_count))
+            redis_conn.setex("username_%s" % user.username,
+                             constans.PASSWORD_ERROR_REDIS_EXPIRES,
+                             str(error_count))
 
     def checke_captcha(self, image_code_id, image_code):
         """
@@ -89,7 +92,7 @@ class BaseView():
         redis_image_code = redis_conn.get("img_%s" % image_code_id)
         if not redis_image_code:
             raise MyException("验证码已过期，请重新获取!")
-        if redis_image_code.decode("utf-8").lower() != image_code:
+        if redis_image_code.decode("utf-8").lower() != image_code.lower():
             raise MyException("验证码错误!")
         redis_conn.delete("img_%s" % image_code_id)
         return True
@@ -101,7 +104,8 @@ class BaseView():
         :return: token、username、user_id
         """
         # 修改用户最近登陆时间
-        user.last_login = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00")
+        user.last_login = datetime.datetime.now().strftime(
+            "%Y-%m-%dT%H:%M:%S+08:00")
         user.save()
 
         # 签发token
@@ -109,12 +113,7 @@ class BaseView():
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
         payload = jwt_payload_handler(user)
         token = jwt_encode_handler(payload)
-        return {
-            "token": token,
-            "username": user.username,
-            "user_id": user.id
-        }
-
+        return {"token": token, "username": user.username, "user_id": user.id}
 
 
 class RegisterView(APIView):
@@ -129,7 +128,6 @@ class RegisterView(APIView):
     :param: email        邮箱地址
     :return: if seccess return user info else return error info
     """
-
     def post(self, request):
         form = forms.RegisterForm(request.data)
         response = MyResponse()
@@ -152,6 +150,7 @@ class RegisterView(APIView):
             msg = form.errors[list(form.errors.keys())[0]][0]
             return Response(response.error_response(msg=msg))
 
+
 class CaptchaView(APIView):
     """
     获取验证码接口
@@ -164,9 +163,11 @@ class CaptchaView(APIView):
 
         text, image = captcha.generate_captcha()
         redis_conn = get_redis_connection("verify_codes")
-        redis_conn.setex("img_%s" % image_code_id, constans.IMAGE_CODE_REDIS_EXPIRES, text)
+        redis_conn.setex("img_%s" % image_code_id,
+                         constans.IMAGE_CODE_REDIS_EXPIRES, text)
         print(text)
         return HttpResponse(image, content_type="images/jpg")
+
 
 class LoginView(BaseView, APIView):
     """
@@ -177,7 +178,6 @@ class LoginView(BaseView, APIView):
     :param: image_code_id 验证码ID
     :param: image_code    验证码
     """
-
     def post(self, request):
         response = MyResponse()
         form = forms.LoginForm(request.data)
@@ -197,4 +197,3 @@ class LoginView(BaseView, APIView):
         else:
             msg = form.errors[list(form.errors.keys())[0]][0]
             return Response(response.error_response(msg=msg))
-
