@@ -14,9 +14,8 @@ RUN apt-get install -y wget vim \
     && wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
     && python3.6 /tmp/get-pip.py \
     && pip install --upgrade pip
-
 WORKDIR /code
 
-COPY requirements.txt requirements.txt
+COPY srequirements.txt requirements.txt
 RUN pip install -r requirements.txt
 COPY . .
