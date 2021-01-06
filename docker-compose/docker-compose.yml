@@ -14,7 +14,7 @@ services:
             - redis_vol:/data # 通过挂载给redis数据备份
             - C:/Users/dh/Desktop/code/Aley/docker-compose/redis/redis.conf:/etc/redis/redis.conf # 挂载redis配置文件
         ports:
-            - "6379:6379"
+            - "6371:6379"
         restart: always # always表容器运行发生错误时一直重启
 
     mysql:
@@ -29,7 +29,7 @@ services:
             - C:/Users/dh/Desktop/code/Aley/docker-compose/mysql/my.cnf:/etc/mysql/my.cnf # 挂载配置文件
             - C:/Users/dh/Desktop/code/Aley/docker-compose/mysql/init:/docker-entrypoint-initdb.d/ # 挂载数据初始化sql脚本
         ports:
-            - "3306:3306" # 与配置文件保持一致
+            - "3301:3306" # 与配置文件保持一致
         restart: always
       
     web:
