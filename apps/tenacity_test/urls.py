@@ -2,9 +2,8 @@ from django.urls import path
 from django.urls import re_path
 from . import views
 from rest_framework.generics import ListCreateAPIView
-from users.models import User
-from users.serializers import UserSerializer
-
+from ..users.models import User
+from ..users.serializers import UserSerializer
 
 urlpatterns = [
     # 视图重试
@@ -20,7 +19,7 @@ urlpatterns = [
 
     # request 解析
     path(r"data/", views.Data.as_view()),
-    path(r"query_params/", views.Query_Params.as_view()),
+    path(r"query_params/", views.QueryParams.as_view()),
     path(r"parsers/", views.Parsers.as_view()),
 
     # 响应
@@ -28,9 +27,9 @@ urlpatterns = [
 
     # 通用视图
     path(r"userlist/", views.UserList.as_view()),
-    path(r'userlist1/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list'),
+    path(r'userlist1/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer),
+         name='user-list'),
     path(r"userlist2/", views.UserList2.as_view()),
     re_path(r"^userlist2/(?P<uid>\d+)/$", views.UserList2.as_view()),
 
-    
 ]

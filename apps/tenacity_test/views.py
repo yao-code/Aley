@@ -1,11 +1,11 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
-from rest_framework.parsers import FormParser
-from rest_framework.parsers import MultiPartParser
+# from rest_framework.parsers import FormParser
+# from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
+# from rest_framework.status import HTTP_200_OK
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.generics import GenericAPIView
 
@@ -19,9 +19,8 @@ from rest_framework.generics import GenericAPIView
 from tenacity import *
 
 from utils.response import MyResponse
-
-from users.models import User
-from users.serializers import UserSerializer
+from ..users.models import User
+from ..users.serializers import UserSerializer
 
 
 # Create your views here.
@@ -30,6 +29,7 @@ def is_false(value):
     print(type(value))
     print(value.data)  # 获取 Response 的数据 
     return False
+
 
 def return_last_value(retry_state):
     print("执行回调函数")
@@ -40,10 +40,10 @@ class Test_1(APIView):
 
     @retry  # 不间断重试 无限重试
     def get(self, request):
-        response = MyResponse()
+        response = MyResponse().to_dict()
         print("正在重试。。。")
         raise KeyError
-        return Response(response.to_dict())
+        return Response(response)
 
 
 class Test_2(APIView):
@@ -150,7 +150,7 @@ class Data(APIView):
         return Response(MyResponse().to_dict())
 
 
-class Query_Params(APIView):
+class QueryParams(APIView):
     """
     通过 request.query_params 获取参数
     可以获取 GET 请求的所有参数
@@ -163,7 +163,7 @@ class Query_Params(APIView):
         return Response(MyResponse().to_dict())
 
     def post(self, request):
-        data = request.query_params 
+        data = request.query_params
         print(data)
         return Response(MyResponse().to_dict())
 
@@ -176,7 +176,6 @@ class Query_Params(APIView):
         data = request.query_params
         print(data)
         return Response(MyResponse().to_dict())
-
 
 
 class Parsers(APIView):
@@ -213,6 +212,7 @@ class UserList(ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
 class UserList2(GenericAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
@@ -235,8 +235,3 @@ class UserList2(GenericAPIView):
                 response.data = self.get_serializer(user_obj).data
                 return Response(response.to_dict())
             return Response(response.error_response("no one"))
-
-
-
-
-
